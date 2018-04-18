@@ -142,3 +142,8 @@ const struct sched_class wrr_sched_class = {
     .prio_changed = prio_changed_wrr,
     .switched_to = switched_to_wrr,
 }; /* Note: Remove SMP support */
+
+asmlinkage long sys_set_wrr_weight(pid_t pid, int weight) {
+	struct task_struct *p = find_task_by_vpid(pid);
+	p->wrr.wrr_weight = weight;
+}
