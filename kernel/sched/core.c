@@ -1614,6 +1614,8 @@ static void __sched_fork(struct task_struct *p)
 	p->se.nr_migrations		= 0;
 	p->se.vruntime			= 0;
 	INIT_LIST_HEAD(&p->se.group_node);
+/* COMP4511 Assignment 5 Weighted Round Robin */
+	INIT_LIST_HEAD(&p->wrr.run_list);
 
 /*
  * Load-tracking only depends on SMP, FAIR_GROUP_SCHED dependency below may be
@@ -1710,7 +1712,10 @@ void sched_fork(struct task_struct *p)
 		p->sched_reset_on_fork = 0;
 	}
 
-	if (!rt_prio(p->prio))
+	if (!rt_prio(p->prio)
+/* COMP4511 Assignment 5 Weighted Round Robin */
+			&& p->policy != SCHED_WRR
+	)
 		p->sched_class = &fair_sched_class;
 
 	if (p->sched_class->task_fork)
@@ -3837,7 +3842,10 @@ __setscheduler(struct rq *rq, struct task_struct *p, int policy, int prio)
 	if (rt_prio(p->prio))
 		p->sched_class = &rt_sched_class;
 	else
-		p->sched_class = &fair_sched_class;
+/* COMP4511 Assignment 5 Weighted Round Robin */
+		/*p->sched_class = &fair_sched_class;*/
+		p->sched_class = &wrr_sched_class;
+
 	set_load_weight(p);
 }
 
@@ -3878,6 +3886,8 @@ recheck:
 		policy &= ~SCHED_RESET_ON_FORK;
 
 		if (policy != SCHED_FIFO && policy != SCHED_RR &&
+/* COMP4511 Assignment 5 Weighted Round Robin */
+				policy != SCHED_WRR &&
 				policy != SCHED_NORMAL && policy != SCHED_BATCH &&
 				policy != SCHED_IDLE)
 			return -EINVAL;
@@ -6989,6 +6999,9 @@ void __init sched_init(void)
 		rq->calc_load_update = jiffies + LOAD_FREQ;
 		init_cfs_rq(&rq->cfs);
 		init_rt_rq(&rq->rt, rq);
+/* COMP4511 Assignment 5 Weighted Round Robin */
+		init_wrr_rq(&rq->wrr);
+
 #ifdef CONFIG_FAIR_GROUP_SCHED
 		root_task_group.shares = ROOT_TASK_GROUP_LOAD;
 		INIT_LIST_HEAD(&rq->leaf_cfs_rq_list);

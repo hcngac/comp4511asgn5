@@ -236,6 +236,10 @@ struct cfs_bandwidth { };
 
 #endif	/* CONFIG_CGROUP_SCHED */
 
+/* COP4511 Assignment 5 Weighted Round Robin */
+struct wrr_rq {
+	struct list_head queue;
+};
 /* CFS-related fields in a runqueue */
 struct cfs_rq {
 	struct load_weight load;
@@ -422,6 +426,8 @@ struct rq {
 
 	struct cfs_rq cfs;
 	struct rt_rq rt;
+/* COP4511 Assignment 5 Weighted Round Robin */
+	struct wrr_rq wrr;
 
 #ifdef CONFIG_FAIR_GROUP_SCHED
 	/* list of leaf cfs_rq on this cpu: */
@@ -1019,6 +1025,8 @@ extern const struct sched_class stop_sched_class;
 extern const struct sched_class rt_sched_class;
 extern const struct sched_class fair_sched_class;
 extern const struct sched_class idle_sched_class;
+/* COP4511 Assignment 5 Weighted Round Robin */
+extern const struct sched_class wrr_sched_class;
 
 
 #ifdef CONFIG_SMP
@@ -1317,6 +1325,8 @@ extern void print_rt_stats(struct seq_file *m, int cpu);
 
 extern void init_cfs_rq(struct cfs_rq *cfs_rq);
 extern void init_rt_rq(struct rt_rq *rt_rq, struct rq *rq);
+/* COP4511 Assignment 5 Weighted Round Robin */
+extern void init_wrr_rq(struct wrr_rq *wrr_rq);
 
 extern void cfs_bandwidth_usage_inc(void);
 extern void cfs_bandwidth_usage_dec(void);

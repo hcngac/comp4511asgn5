@@ -1,8 +1,8 @@
 VERSION = 3
 PATCHLEVEL = 10
 SUBLEVEL = 94
-EXTRAVERSION =
-NAME = TOSSUG Baby Fish
+EXTRAVERSION = -comp4511asgn5
+NAME = TOSSUG Baby Fish COMP4511 Assignment 5 Patch
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
