@@ -977,7 +977,8 @@ struct sched_statistics {
 /* COP4511 Assignment 5 Weighted Round Robin */
 struct sched_wrr_entity {
 	struct list_head run_list;
-	int time_slice;
+	int wrr_weight;
+	unsigned int time_slice;
 };
 
 struct sched_entity {
