@@ -16,6 +16,8 @@ for the kernel programming teaching and learning purpose
 
 #include "sched.h"
 
+#define WRR_TIMESLICE (100 * HZ / 1000)
+
 void init_wrr_rq(struct wrr_rq *rr_rq)
 {
 	INIT_LIST_HEAD(&rr_rq->queue);
@@ -26,6 +28,7 @@ enqueue_task_wrr(struct rq *rq, struct task_struct *p, int flags)
 {
     struct sched_wrr_entity *wrr_se = &p->wrr;
     list_add_tail(&wrr_se->run_list, &rq->wrr.queue);
+	wrr_se->wrr_weight = 1;
     printk(KERN_INFO"[SCHED_WRR] ENQUEUE: Process-%d\n", p->pid);
 }
 
@@ -104,15 +107,16 @@ static void task_tick_wrr(struct rq *rq, struct task_struct *p,
 		2. remove the current one to the tail of the queue
 		3. if there is another task in the gueue, then set the need_reched flag
 		*/
-		p->wrr.time_slice = 10;
+		p->wrr.time_slice = WRR_TIMESLICE * p->wrr.wrr_weight;
 		list_move_tail(&p->wrr.run_list, &rq->wrr.queue);
 		set_tsk_need_resched(p);
 }
 
 unsigned int get_rr_interval_wrr(struct rq *rq, struct task_struct *p)
 {
+	
     /* Return the default time slice */
-    return 10;
+    return WRR_TIMESLICE * p->wrr.wrr_weight;
 }
 
 static void
